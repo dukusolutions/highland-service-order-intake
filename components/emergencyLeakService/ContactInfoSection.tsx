@@ -1,9 +1,5 @@
 import { ChangeEvent } from "react";
-import {
-  IntakeFormData,
-  PreferredContactMethod,
-  ValidationErrors,
-} from "@/types/emergencyLeakService";
+import { IntakeFormData, ValidationErrors } from "@/types/emergencyLeakService";
 import { FormInput } from "@/components/emergencyLeakService/FormInput";
 
 type ContactInfoSectionProps = {
@@ -31,57 +27,34 @@ export default function ContactInfoSection({
         Contact Info
       </h2>
       <FormInput
-        id="contactName"
-        label="Your Name*"
-        value={formData.contactName}
-        onChange={handleInput("contactName")}
-        error={errors.contactName}
+        id="clientAccountName"
+        label="Account Name*"
+        value={formData.clientAccountName}
+        onChange={handleInput("clientAccountName")}
+        error={errors.clientAccountName}
       />
       <FormInput
-        id="companyName"
-        label="Company Name*"
-        value={formData.companyName}
-        onChange={handleInput("companyName")}
-        error={errors.companyName}
+        id="clientAccountContactName"
+        label="Account Contact Name*"
+        value={formData.clientAccountContactName}
+        onChange={handleInput("clientAccountContactName")}
+        error={errors.clientAccountContactName}
       />
       <FormInput
-        id="phoneNumber"
+        id="clientPhone"
         label="Phone Number*"
-        value={formData.phoneNumber}
-        onChange={handleInput("phoneNumber")}
-        error={errors.phoneNumber}
+        value={formData.clientPhone}
+        onChange={handleInput("clientPhone")}
+        error={errors.clientPhone}
       />
       <FormInput
-        id="email"
+        id="clientEmail"
         label="Email Address*"
-        value={formData.email}
-        onChange={handleInput("email")}
-        error={errors.email}
+        value={formData.clientEmail}
+        onChange={handleInput("clientEmail")}
+        error={errors.clientEmail}
         type="email"
       />
-
-      <label
-        className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
-        htmlFor="preferredContactMethod"
-      >
-        Preferred Contact Method*
-        <select
-          id="preferredContactMethod"
-          name="preferredContactMethod"
-          value={formData.preferredContactMethod}
-          onChange={(event) =>
-            onFieldChange(
-              "preferredContactMethod",
-              event.target.value as PreferredContactMethod,
-            )
-          }
-          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
-        >
-          <option value="Phone">Phone</option>
-          <option value="Email">Email</option>
-          <option value="Text">Text</option>
-        </select>
-      </label>
     </section>
   );
 }

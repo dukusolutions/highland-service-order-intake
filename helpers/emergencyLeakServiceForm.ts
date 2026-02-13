@@ -5,27 +5,41 @@ import {
 } from "@/types/emergencyLeakService";
 
 export const EMPTY_PROPERTY: LeakingProperty = {
-  propertyNameId: "",
-  streetAddress: "",
-  city: "",
-  state: "",
-  zipCode: "",
-  propertyType: "",
-  serviceDescription: "",
+  siteName: "",
+  siteAddress: "",
+  siteAddress2: "",
+  siteCity: "",
+  siteZip: "",
+  tenantBusinessName: "",
+  tenantContactName: "",
+  tenantContactPhone: "",
+  tenantContactCell: "",
+  tenantContactEmail: "",
+  hoursOfOperation: "",
+  leakLocation: "Middle",
+  leakNear: "Other",
+  leakNearOther: "",
+  hasAccessCode: false,
+  accessCode: "",
+  isSaturdayAccessPermitted: false,
+  isKeyRequired: false,
+  isLadderRequired: false,
+  roofPitch: "FlatRoof",
+  comments: "",
 };
 
 export const INITIAL_FORM_DATA: IntakeFormData = {
   leakingProperties: [{ ...EMPTY_PROPERTY }],
-  contactName: "",
-  companyName: "",
-  phoneNumber: "",
-  email: "",
-  preferredContactMethod: "Phone",
-  billingContactName: "",
-  billingPhone: "",
-  billingEmail: "",
-  billingAddress: "",
-  additionalNotes: "",
+  clientAccountName: "",
+  clientAccountContactName: "",
+  clientEmail: "",
+  clientPhone: "",
+  billingEntityBillToName: "",
+  billingBillToAddress: "",
+  billingBillToAddress2: "",
+  billingBillToCity: "",
+  billingBillToZip: "",
+  billingBillToEmail: "",
 };
 
 function isEmail(value: string) {
@@ -42,50 +56,32 @@ export function validateEmergencyLeakServiceForm(
   const errors: ValidationErrors = {};
   const property = data.leakingProperties[0];
 
-  if (!property.propertyNameId.trim()) {
-    errors.propertyNameId = "Property Name/ID is required.";
+  if (!data.clientAccountName.trim()) {
+    errors.clientAccountName = "Account Name is required.";
   }
-  if (!property.streetAddress.trim()) {
-    errors.streetAddress = "Street Address is required.";
+  if (!data.clientAccountContactName.trim()) {
+    errors.clientAccountContactName = "Account Contact Name is required.";
   }
-  if (!property.city.trim()) {
-    errors.city = "City is required.";
+  if (!isEmail(data.clientEmail)) {
+    errors.clientEmail = "Enter a valid email address.";
   }
-  if (!property.state.trim()) {
-    errors.state = "State is required.";
+  if (!isPhone(data.clientPhone)) {
+    errors.clientPhone = "Enter a valid phone number.";
   }
-  if (!property.zipCode.trim()) {
-    errors.zipCode = "Zip Code is required.";
+  if (!property.siteName.trim()) {
+    errors.siteName = "Site Name is required.";
   }
-  if (!property.propertyType.trim()) {
-    errors.propertyType = "Property Type is required.";
+  if (!property.siteAddress.trim()) {
+    errors.siteAddress = "Site Address is required.";
   }
-  if (!property.serviceDescription.trim()) {
-    errors.serviceDescription = "Description of Services is required.";
+  if (!property.siteCity.trim()) {
+    errors.siteCity = "Site City is required.";
   }
-  if (!data.contactName.trim()) {
-    errors.contactName = "Your Name is required.";
+  if (!property.siteZip.trim()) {
+    errors.siteZip = "Site Zip is required.";
   }
-  if (!data.companyName.trim()) {
-    errors.companyName = "Company Name is required.";
-  }
-  if (!isPhone(data.phoneNumber)) {
-    errors.phoneNumber = "Enter a valid phone number.";
-  }
-  if (!isEmail(data.email)) {
-    errors.email = "Enter a valid email address.";
-  }
-  if (!data.billingContactName.trim()) {
-    errors.billingContactName = "Billing Contact Name is required.";
-  }
-  if (!isPhone(data.billingPhone)) {
-    errors.billingPhone = "Enter a valid billing phone number.";
-  }
-  if (!isEmail(data.billingEmail)) {
-    errors.billingEmail = "Enter a valid billing email address.";
-  }
-  if (!data.billingAddress.trim()) {
-    errors.billingAddress = "Billing Address is required.";
+  if (data.billingBillToEmail.trim() && !isEmail(data.billingBillToEmail)) {
+    errors.billingBillToEmail = "Enter a valid billing email address.";
   }
 
   return errors;

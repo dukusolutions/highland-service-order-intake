@@ -13,15 +13,18 @@ import {
   validateEmergencyLeakServiceForm,
 } from "@/helpers/emergencyLeakServiceForm";
 import {
+  prefillServiceOrderByAccount,
+  submitServiceOrderRequest,
+} from "@/helpers/serviceOrderApi";
+import { buildServiceOrderRequestPayload } from "@/helpers/serviceOrderPayload";
+import {
   IntakeFormData,
   LeakingProperty,
-  PrefillLookupResponse,
   ValidationErrors,
 } from "@/types/emergencyLeakService";
 import LeakingPropertySection from "@/components/emergencyLeakService/LeakingPropertySection";
 import ContactInfoSection from "@/components/emergencyLeakService/ContactInfoSection";
 import BillingInfoSection from "@/components/emergencyLeakService/BillingInfoSection";
-import AdditionalNotesSection from "@/components/emergencyLeakService/AdditionalNotesSection";
 
 type EmergencyLeakServiceFormProps = {
   className?: string;
@@ -83,16 +86,8 @@ export default function EmergencyLeakServiceForm({
   const prefillFromLookup = useCallback(
     async (companyName: string, email: string) => {
       try {
-        const response = await fetch("/api/emergency-leak-service/prefill", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ companyName, email }),
-        });
-
-        const result = (await response.json()) as PrefillLookupResponse;
-        if (response.ok && result.found && result.data) {
+        const result = await prefillServiceOrderByAccount(companyName, email);
+        if (result.found && result.data) {
           applyPrefillData(result.data as Partial<IntakeFormData>);
         }
       } catch {
@@ -103,8 +98,8 @@ export default function EmergencyLeakServiceForm({
   );
 
   useEffect(() => {
-    const companyName = formData.companyName.trim();
-    const email = formData.email.trim();
+    const companyName = formData.clientAccountName.trim();
+    const email = formData.clientEmail.trim();
 
     if (!companyName && !email) {
       return;
@@ -121,7 +116,7 @@ export default function EmergencyLeakServiceForm({
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [formData.companyName, formData.email, prefillFromLookup]);
+  }, [formData.clientAccountName, formData.clientEmail, prefillFromLookup]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -137,17 +132,8 @@ export default function EmergencyLeakServiceForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/emergency-leak-service", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
+      const payload = buildServiceOrderRequestPayload(formData);
+      await submitServiceOrderRequest(payload);
 
       setSubmitState("success");
       setFormData(INITIAL_FORM_DATA);
@@ -178,22 +164,22 @@ export default function EmergencyLeakServiceForm({
         onPropertyChange={updatePropertyField}
       />
 
+      <div className="-mt-4">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+        >
+          Add Property
+        </button>
+      </div>
+
       <BillingInfoSection
         formData={formData}
         errors={errors}
         onFieldChange={updateField}
       />
 
-      <AdditionalNotesSection
-        additionalNotes={formData.additionalNotes}
-        onChange={(event) => updateField("additionalNotes", event.target.value)}
-      />
-
-      <div className="flex flex-col gap-3 border-t border-slate-300 pt-6 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm text-slate-600">
-          Next step: enable adding multiple leaking properties in this same
-          flow.
-        </p>
+      <div className="flex flex-col gap-3 border-t border-slate-300 pt-6 md:flex-row md:justify-end">
         <button
           type="submit"
           disabled={isSubmitting}
