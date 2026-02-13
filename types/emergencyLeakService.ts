@@ -115,3 +115,20 @@ export type ServiceOrderRequestPayload = {
   leakDetails: LeakDetailsPayload;
   additionalLeaks: LeakDetailsPayload[];
 };
+
+export type ServiceOrderLookupItem = {
+  Id: number;
+  RequestDate: string;
+  Client: ClientInfoPayload;
+  Billing: BillingInfoPayload;
+  LeakDetails: LeakDetailsPayload;
+  AdditionalLeaks: LeakDetailsPayload[];
+};
+
+export type ServiceOrderLookupResponse = {
+  clients: ClientInfoPayload[];
+  billings: BillingInfoPayload[];
+  leaks: LeakDetailsPayload[];
+  serviceOrders: ServiceOrderLookupItem[];
+  message?: string;
+};

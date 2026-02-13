@@ -1,27 +1,49 @@
 import {
-  PrefillLookupResponse,
+  ServiceOrderLookupResponse,
   ServiceOrderRequestPayload,
 } from "@/types/emergencyLeakService";
 
-export async function prefillServiceOrderByAccount(
-  companyName: string,
+async function readLookupResponse(
+  response: Response,
+): Promise<ServiceOrderLookupResponse> {
+  const result = (await response.json()) as ServiceOrderLookupResponse;
+
+  if (!response.ok) {
+    throw new Error(result.message ?? "Lookup request failed.");
+  }
+
+  return result;
+}
+
+export async function lookupServiceOrderByNumber(
+  serviceOrderNumber: string,
+): Promise<ServiceOrderLookupResponse> {
+  const response = await fetch(
+    "/api/emergency-leak-service/lookup/service-order",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ serviceOrderNumber }),
+    },
+  );
+
+  return readLookupResponse(response);
+}
+
+export async function lookupServiceOrderByEmail(
   email: string,
-): Promise<PrefillLookupResponse> {
-  const response = await fetch("/api/emergency-leak-service/prefill", {
+): Promise<ServiceOrderLookupResponse> {
+  const response = await fetch("/api/emergency-leak-service/lookup/email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ companyName, email }),
+    body: JSON.stringify({ email }),
   });
 
-  const result = (await response.json()) as PrefillLookupResponse;
-
-  if (!response.ok) {
-    throw new Error(result.message ?? "Prefill request failed.");
-  }
-
-  return result;
+  return readLookupResponse(response);
 }
 
 export async function submitServiceOrderRequest(
