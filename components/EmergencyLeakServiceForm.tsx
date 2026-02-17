@@ -50,6 +50,7 @@ export default function EmergencyLeakServiceForm({
     useState<ServiceOrderLookupResponse | null>(null);
   const [lookupMessage, setLookupMessage] = useState("");
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [isLookupOpen, setIsLookupOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [submitRequestId, setSubmitRequestId] = useState("");
@@ -160,6 +161,9 @@ export default function EmergencyLeakServiceForm({
       clientEmail: client.Email,
       clientPhone: client.Phone,
     });
+    setIsLookupOpen(false);
+    setLookupResults(null);
+    setLookupMessage("Contact info prefilled.");
   }
 
   function applyBillingSelection(billing: BillingInfoPayload) {
@@ -172,6 +176,9 @@ export default function EmergencyLeakServiceForm({
       billingBillToZip: billing.BillToZip,
       billingBillToEmail: billing.BillToEmail,
     });
+    setIsLookupOpen(false);
+    setLookupResults(null);
+    setLookupMessage("Billing info prefilled.");
   }
 
   function applyLeakSelection(leak: LeakDetailsPayload) {
@@ -204,6 +211,9 @@ export default function EmergencyLeakServiceForm({
         },
       ],
     });
+    setIsLookupOpen(false);
+    setLookupResults(null);
+    setLookupMessage("Property info prefilled.");
   }
 
   async function performLookup(payload: ServiceIntakeRequestPayload) {
@@ -319,200 +329,225 @@ export default function EmergencyLeakServiceForm({
       onSubmit={onSubmit}
       noValidate
     >
-      <section className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-4 md:grid-cols-2">
-        <div className="md:col-span-2">
-          <h2 className="text-lg font-bold text-slate-900">
-            Save Time — Prefill Your Info
-          </h2>
-          <p className="mt-1 text-sm leading-relaxed text-slate-600">
-            Submitted a service request before? Enter your previous service
-            order number or the email on file and we&apos;ll pull in your
-            account, billing, and property details so you don&apos;t have to
-            re-enter them. You can also skip this step and fill everything out
-            manually below.
-          </p>
-        </div>
-
-        <label
-          className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
-          htmlFor="lookupServiceOrderNumber"
+      <section className="rounded-lg border border-slate-300">
+        <button
+          type="button"
+          onClick={() => setIsLookupOpen((prev) => !prev)}
+          className="flex w-full items-center justify-between p-4 text-left"
         >
-          Previous Service Order Number
-          <input
-            id="lookupServiceOrderNumber"
-            name="lookupServiceOrderNumber"
-            value={serviceOrderLookupValue}
-            onChange={(event) => setServiceOrderLookupValue(event.target.value)}
-            placeholder="e.g. ELS-26-01-4837 or reference ID"
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
-          />
-          <button
-            type="button"
-            onClick={handleLookupByServiceOrder}
-            disabled={isLookingUp || !serviceOrderLookupValue.trim()}
-            className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLookingUp && (
-              <svg
-                className="h-4 w-4 animate-spin text-emerald-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-            )}
-            {isLookingUp ? "Searching…" : "Look Up by Service Order"}
-          </button>
-        </label>
-
-        <label
-          className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
-          htmlFor="lookupEmail"
-        >
-          Email on File
-          <input
-            id="lookupEmail"
-            name="lookupEmail"
-            value={emailLookupValue}
-            onChange={(event) => setEmailLookupValue(event.target.value)}
-            type="email"
-            placeholder="e.g. john@company.com"
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
-          />
-          <button
-            type="button"
-            onClick={handleLookupByEmail}
-            disabled={isLookingUp || !emailLookupValue.trim()}
-            className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLookingUp && (
-              <svg
-                className="h-4 w-4 animate-spin text-emerald-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-            )}
-            {isLookingUp ? "Searching…" : "Look Up by Email"}
-          </button>
-        </label>
-
-        {lookupMessage ? (
-          <p className="md:col-span-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-            {lookupMessage}
-          </p>
-        ) : null}
-
-        {lookupResults ? (
-          <div className="md:col-span-2 grid grid-cols-1 gap-4">
-            {lookupResults.clients.map((client, index) => (
-              <div
-                key={`client-${index}`}
-                className="rounded-md border border-slate-200 p-3"
-              >
-                <p className="text-sm font-semibold text-slate-900">
-                  Contact: {client.AccountName}
-                </p>
-                <p className="text-xs text-slate-600">
-                  {client.AccountContactName} · {client.Email}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => applyClientSelection(client)}
-                  className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
-                >
-                  Prefill Contact
-                </button>
-              </div>
-            ))}
-
-            {(() => {
-              const billings = lookupResults.billings;
-              if (billings.length === 0) return null;
-              const merged: BillingInfoPayload =
-                billings.length === 1
-                  ? billings[0]
-                  : billings.reduce<BillingInfoPayload>(
-                      (acc, b) => ({
-                        DynamoId: acc.DynamoId ?? b.DynamoId,
-                        EntityBillToName:
-                          acc.EntityBillToName || b.EntityBillToName,
-                        BillToAddress: acc.BillToAddress || b.BillToAddress,
-                        BillToAddress2: acc.BillToAddress2 || b.BillToAddress2,
-                        BillToCity: acc.BillToCity || b.BillToCity,
-                        BillToZip: acc.BillToZip || b.BillToZip,
-                        BillToEmail: acc.BillToEmail || b.BillToEmail,
-                      }),
-                      {} as BillingInfoPayload,
-                    );
-              return (
-                <div className="rounded-md border border-slate-200 p-3">
-                  <p className="text-sm font-semibold text-slate-900">
-                    Billing: {merged.EntityBillToName}
-                  </p>
-                  <p className="text-xs text-slate-600">
-                    {merged.BillToAddress} {merged.BillToCity}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => applyBillingSelection(merged)}
-                    className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
-                  >
-                    Prefill Billing
-                  </button>
-                </div>
-              );
-            })()}
-
-            {lookupResults.leaks.map((leak, index) => (
-              <div
-                key={`leak-${index}`}
-                className="rounded-md border border-slate-200 p-3"
-              >
-                <p className="text-sm font-semibold text-slate-900">
-                  Property: {leak.SiteName}
-                </p>
-                <p className="text-xs text-slate-600">
-                  {leak.SiteAddress}, {leak.SiteCity}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => applyLeakSelection(leak)}
-                  className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
-                >
-                  Prefill Property
-                </button>
-              </div>
-            ))}
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">
+              Save Time — Prefill Your Info
+            </h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+              Look up a previous service order to auto-fill your details.
+            </p>
           </div>
-        ) : null}
+          <svg
+            className={`h-5 w-5 shrink-0 text-slate-500 transition-transform ${
+              isLookupOpen ? "rotate-180" : ""
+            }`}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+
+        {isLookupOpen && (
+          <div className="grid grid-cols-1 gap-5 border-t border-slate-200 p-4 md:grid-cols-2">
+            <label
+              className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
+              htmlFor="lookupServiceOrderNumber"
+            >
+              Previous Service Order Number
+              <input
+                id="lookupServiceOrderNumber"
+                name="lookupServiceOrderNumber"
+                value={serviceOrderLookupValue}
+                onChange={(event) =>
+                  setServiceOrderLookupValue(event.target.value)
+                }
+                placeholder="e.g. ELS-26-01-4837 or reference ID"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+              />
+              <button
+                type="button"
+                onClick={handleLookupByServiceOrder}
+                disabled={isLookingUp || !serviceOrderLookupValue.trim()}
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLookingUp && (
+                  <svg
+                    className="h-4 w-4 animate-spin text-emerald-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                )}
+                {isLookingUp ? "Searching…" : "Look Up by Service Order"}
+              </button>
+            </label>
+
+            <label
+              className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
+              htmlFor="lookupEmail"
+            >
+              Email on File
+              <input
+                id="lookupEmail"
+                name="lookupEmail"
+                value={emailLookupValue}
+                onChange={(event) => setEmailLookupValue(event.target.value)}
+                type="email"
+                placeholder="e.g. john@company.com"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+              />
+              <button
+                type="button"
+                onClick={handleLookupByEmail}
+                disabled={isLookingUp || !emailLookupValue.trim()}
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLookingUp && (
+                  <svg
+                    className="h-4 w-4 animate-spin text-emerald-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                )}
+                {isLookingUp ? "Searching…" : "Look Up by Email"}
+              </button>
+            </label>
+
+            {lookupMessage ? (
+              <p className="md:col-span-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                {lookupMessage}
+              </p>
+            ) : null}
+
+            {lookupResults ? (
+              <div className="md:col-span-2 grid grid-cols-1 gap-4">
+                {lookupResults.clients.map((client, index) => (
+                  <div
+                    key={`client-${index}`}
+                    className="rounded-md border border-slate-200 p-3"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">
+                      Contact: {client.AccountName}
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      {client.AccountContactName} · {client.Email}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => applyClientSelection(client)}
+                      className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+                    >
+                      Prefill Contact
+                    </button>
+                  </div>
+                ))}
+
+                {(() => {
+                  const billings = lookupResults.billings;
+                  if (billings.length === 0) return null;
+                  const merged: BillingInfoPayload =
+                    billings.length === 1
+                      ? billings[0]
+                      : billings.reduce<BillingInfoPayload>(
+                          (acc, b) => ({
+                            DynamoId: acc.DynamoId ?? b.DynamoId,
+                            EntityBillToName:
+                              acc.EntityBillToName || b.EntityBillToName,
+                            BillToAddress: acc.BillToAddress || b.BillToAddress,
+                            BillToAddress2:
+                              acc.BillToAddress2 || b.BillToAddress2,
+                            BillToCity: acc.BillToCity || b.BillToCity,
+                            BillToZip: acc.BillToZip || b.BillToZip,
+                            BillToEmail: acc.BillToEmail || b.BillToEmail,
+                          }),
+                          {} as BillingInfoPayload,
+                        );
+                  return (
+                    <div className="rounded-md border border-slate-200 p-3">
+                      <p className="text-sm font-semibold text-slate-900">
+                        Billing: {merged.EntityBillToName}
+                      </p>
+                      <p className="text-xs text-slate-600">
+                        {merged.BillToAddress} {merged.BillToCity}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => applyBillingSelection(merged)}
+                        className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+                      >
+                        Prefill Billing
+                      </button>
+                    </div>
+                  );
+                })()}
+
+                {lookupResults.leaks.map((leak, index) => (
+                  <div
+                    key={`leak-${index}`}
+                    className="rounded-md border border-slate-200 p-3"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">
+                      Property: {leak.SiteName}
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      {leak.SiteAddress}, {leak.SiteCity}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => applyLeakSelection(leak)}
+                      className="mt-2 inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+                    >
+                      Prefill Property
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        )}
       </section>
 
       <ContactInfoSection
