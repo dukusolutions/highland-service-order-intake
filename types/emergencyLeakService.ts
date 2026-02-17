@@ -223,3 +223,69 @@ export type SubmitServiceOrderResponse = {
   message: string;
   requestId: string;
 };
+
+// --- Service Order Status API ---
+
+export type ServiceOrderStatusName =
+  | "NEW"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type ServiceOrderStatusData = {
+  Id: string;
+  RequestDate: string;
+  Client: {
+    DynamoAccountId: number | null;
+    DynamoContactId: number | null;
+    AccountName: string;
+    AccountContactName: string;
+    Email: string;
+    Phone: string;
+  };
+  Billing: {
+    DynamoId: number | null;
+    EntityBillToName: string;
+    BillToAddress: string;
+    BillToAddress2: string;
+    BillToCity: string;
+    BillToZip: string;
+    BillToEmail: string;
+  };
+  LeakDetails: {
+    DynamoId: number | null;
+    JobNo: string;
+    JobDate: string | null;
+    SiteName: string;
+    SiteAddress: string;
+    SiteAddress2: string;
+    SiteCity: string;
+    SiteZip: string;
+    TenantBusinessName: string;
+    TenantContactName: string;
+    TenantContactPhone: string;
+    TenantContactCell: string;
+    TenantContactEmail: string;
+    HoursOfOperation: string;
+    LeakLocation: number;
+    LeakNear: number;
+    LeakNearOther: string;
+    HasAccessCode: boolean;
+    AccessCode: string;
+    IsSaturdayAccessPermitted: boolean;
+    IsKeyRequired: boolean;
+    IsLadderRequired: boolean;
+    RoofPitch: number;
+    Comments: string;
+  };
+  AdditionalLeaks: ServiceOrderStatusData["LeakDetails"][];
+  CreatedAt: string;
+  UpdatedAt: string | null;
+};
+
+export type ServiceOrderStatusResponse = {
+  Success: boolean;
+  Message: string;
+  Status: ServiceOrderStatusName;
+  Data: ServiceOrderStatusData | null;
+};

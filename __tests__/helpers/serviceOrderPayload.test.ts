@@ -1,0 +1,144 @@
+import { describe, it, expect } from "vitest";
+import { buildServiceOrderRequestPayload } from "@/helpers/serviceOrderPayload";
+import { IntakeFormData } from "@/types/emergencyLeakService";
+import { INITIAL_FORM_DATA } from "@/helpers/emergencyLeakServiceForm";
+
+function makeFormData(overrides: Partial<IntakeFormData> = {}): IntakeFormData {
+  return {
+    ...INITIAL_FORM_DATA,
+    clientAccountName: "Acme Corp",
+    clientAccountContactName: "John Smith",
+    clientEmail: "john@acme.com",
+    clientPhone: "555-1234",
+    billingEntityBillToName: "Acme AP",
+    billingBillToAddress: "100 Main St",
+    billingBillToCity: "Denver",
+    billingBillToZip: "80202",
+    billingBillToEmail: "ap@acme.com",
+    leakingProperties: [
+      {
+        ...INITIAL_FORM_DATA.leakingProperties[0],
+        siteName: "Acme Warehouse",
+        siteAddress: "456 Industrial Pkwy",
+        siteCity: "Denver",
+        siteZip: "80212",
+        leakLocation: "Front",
+        leakNear: "HVACDuct",
+        roofPitch: "FlatRoof",
+      },
+    ],
+    ...overrides,
+  };
+}
+
+describe("serviceOrderPayload", () => {
+  describe("buildServiceOrderRequestPayload", () => {
+    it("maps client fields correctly", () => {
+      const formData = makeFormData({
+        clientDynamoAccountId: 55,
+        clientDynamoCountId: 99,
+      });
+
+      const payload = buildServiceOrderRequestPayload(formData);
+
+      expect(payload.client.dynamoAccountId).toBe(55);
+      expect(payload.client.dynamoContactId).toBe(99);
+      expect(payload.client.accountName).toBe("Acme Corp");
+      expect(payload.client.accountContactName).toBe("John Smith");
+      expect(payload.client.email).toBe("john@acme.com");
+      expect(payload.client.phone).toBe("555-1234");
+    });
+
+    it("maps billing fields correctly", () => {
+      const formData = makeFormData({ billingDynamoId: 88 });
+      const payload = buildServiceOrderRequestPayload(formData);
+
+      expect(payload.billing.dynamoId).toBe(88);
+      expect(payload.billing.entityBillToName).toBe("Acme AP");
+      expect(payload.billing.billToAddress).toBe("100 Main St");
+      expect(payload.billing.billToCity).toBe("Denver");
+      expect(payload.billing.billToZip).toBe("80202");
+      expect(payload.billing.billToEmail).toBe("ap@acme.com");
+    });
+
+    it("converts leakLocation string to numeric enum", () => {
+      const payload = buildServiceOrderRequestPayload(makeFormData());
+      // "Front" → 1
+      expect(payload.leakDetails.leakLocation).toBe(1);
+    });
+
+    it("converts leakNear string to numeric enum", () => {
+      const payload = buildServiceOrderRequestPayload(makeFormData());
+      // "HVACDuct" → 1
+      expect(payload.leakDetails.leakNear).toBe(1);
+    });
+
+    it("converts roofPitch string to numeric enum", () => {
+      const payload = buildServiceOrderRequestPayload(makeFormData());
+      // "FlatRoof" → 1
+      expect(payload.leakDetails.roofPitch).toBe(1);
+    });
+
+    it("maps Middle leak location to 2", () => {
+      const formData = makeFormData({
+        leakingProperties: [
+          {
+            ...INITIAL_FORM_DATA.leakingProperties[0],
+            siteName: "Site",
+            siteAddress: "1 St",
+            siteCity: "City",
+            siteZip: "00000",
+            leakLocation: "Middle",
+            leakNear: "Skylight",
+            roofPitch: "SteepShingleTile",
+          },
+        ],
+      });
+      const payload = buildServiceOrderRequestPayload(formData);
+
+      expect(payload.leakDetails.leakLocation).toBe(2); // Middle
+      expect(payload.leakDetails.leakNear).toBe(2); // Skylight
+      expect(payload.leakDetails.roofPitch).toBe(2); // SteepShingleTile
+    });
+
+    it("places first property in leakDetails, rest in additionalLeaks", () => {
+      const formData = makeFormData({
+        leakingProperties: [
+          {
+            ...INITIAL_FORM_DATA.leakingProperties[0],
+            siteName: "Primary Site",
+            siteAddress: "1 St",
+            siteCity: "City",
+            siteZip: "00000",
+            leakLocation: "Front",
+            leakNear: "Wall",
+            roofPitch: "FlatRoof",
+          },
+          {
+            ...INITIAL_FORM_DATA.leakingProperties[0],
+            siteName: "Secondary Site",
+            siteAddress: "2 St",
+            siteCity: "City",
+            siteZip: "00000",
+            leakLocation: "Back",
+            leakNear: "Drain",
+            roofPitch: "SteepShingleTile",
+          },
+        ],
+      });
+
+      const payload = buildServiceOrderRequestPayload(formData);
+
+      expect(payload.leakDetails.siteName).toBe("Primary Site");
+      expect(payload.additionalLeaks).toHaveLength(1);
+      expect(payload.additionalLeaks[0].siteName).toBe("Secondary Site");
+      expect(payload.additionalLeaks[0].leakLocation).toBe(3); // Back
+      expect(payload.additionalLeaks[0].leakNear).toBe(4); // Drain
+    });
+
+    it("returns empty additionalLeaks when only one property", () => {
+      const payload = buildServiceOrderRequestPayload(makeFormData());
+      expect(payload.additionalLeaks).toEqual([]);
+    });
+  });
+});

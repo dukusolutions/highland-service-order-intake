@@ -26,6 +26,7 @@ import {
 import LeakingPropertySection from "@/components/emergencyLeakService/LeakingPropertySection";
 import ContactInfoSection from "@/components/emergencyLeakService/ContactInfoSection";
 import BillingInfoSection from "@/components/emergencyLeakService/BillingInfoSection";
+import OrderStatusPanel from "@/components/emergencyLeakService/OrderStatusPanel";
 
 type EmergencyLeakServiceFormProps = {
   className?: string;
@@ -59,6 +60,7 @@ export default function EmergencyLeakServiceForm({
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">(
     "idle",
   );
+  const [activeReferenceId, setActiveReferenceId] = useState("");
 
   const activeProperty = useMemo(
     () => formData.leakingProperties[0],
@@ -261,6 +263,7 @@ export default function EmergencyLeakServiceForm({
       setSubmitState("success");
       setSubmitRequestId(submitResult.requestId);
       setSubmitSuccessMessage(submitResult.message);
+      setActiveReferenceId(submitResult.requestId);
       setIsConfirmModalOpen(false);
       setIsSuccessModalOpen(true);
       setFormData(INITIAL_FORM_DATA);
@@ -309,9 +312,29 @@ export default function EmergencyLeakServiceForm({
     setLookupResults(null);
     setLookupMessage("Form cleared.");
     setSubmitState("idle");
+    setActiveReferenceId("");
     setIsConfirmModalOpen(false);
     setIsSuccessModalOpen(false);
     window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+  }
+
+  function handleStatusDismiss() {
+    setActiveReferenceId("");
+    setSubmitState("idle");
+    setSubmitRequestId("");
+    setSubmitSuccessMessage("");
+    setIsSuccessModalOpen(false);
+  }
+
+  if (activeReferenceId && !isSuccessModalOpen) {
+    return (
+      <div className={className ?? "space-y-8 px-6 py-8 md:px-10"}>
+        <OrderStatusPanel
+          referenceId={activeReferenceId}
+          onDismiss={handleStatusDismiss}
+        />
+      </div>
+    );
   }
 
   return (
@@ -647,13 +670,20 @@ export default function EmergencyLeakServiceForm({
               Reference ID:{" "}
               <span className="font-bold">{submitRequestId || "Pending"}</span>
             </p>
-            <div className="mt-5 flex justify-end">
+            <div className="mt-5 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setIsSuccessModalOpen(false)}
                 className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
               >
-                Close
+                View Order Status
+              </button>
+              <button
+                type="button"
+                onClick={handleStatusDismiss}
+                className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Submit Another
               </button>
             </div>
           </div>

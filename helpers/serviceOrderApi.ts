@@ -5,6 +5,7 @@ import {
   ServiceOrderLookupResponse,
   ServiceOrderIntakeRequest,
   SubmitServiceOrderResponse,
+  ServiceOrderStatusResponse,
 } from "@/types/emergencyLeakService";
 import { fetchJson } from "@/helpers/unifiedFetcher";
 
@@ -113,4 +114,16 @@ export async function submitServiceOrderRequest(
         ? result.requestId
         : "Pending",
   };
+}
+
+export async function getServiceOrderStatus(
+  referenceId: string,
+): Promise<ServiceOrderStatusResponse> {
+  const result = await fetchJson<ServiceOrderStatusResponse>(
+    `/api/emergency-leak-service/status?referenceId=${encodeURIComponent(referenceId)}`,
+    { method: "GET" },
+    "Status check failed.",
+  );
+
+  return result;
 }
