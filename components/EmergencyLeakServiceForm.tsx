@@ -320,9 +320,18 @@ export default function EmergencyLeakServiceForm({
       noValidate
     >
       <section className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-4 md:grid-cols-2">
-        <h2 className="md:col-span-2 text-lg font-bold text-slate-900">
-          Lookup Existing Records
-        </h2>
+        <div className="md:col-span-2">
+          <h2 className="text-lg font-bold text-slate-900">
+            Save Time — Prefill Your Info
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            Submitted a service request before? Enter your previous service
+            order number or the email on file and we&apos;ll pull in your
+            account, billing, and property details so you don&apos;t have to
+            re-enter them. You can also skip this step and fill everything out
+            manually below.
+          </p>
+        </div>
 
         <label
           className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
@@ -334,16 +343,38 @@ export default function EmergencyLeakServiceForm({
             name="lookupServiceOrderNumber"
             value={serviceOrderLookupValue}
             onChange={(event) => setServiceOrderLookupValue(event.target.value)}
-            placeholder="ELS-26-##-####"
+            placeholder="e.g. ELS-26-01-4837 or reference ID"
             className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
           />
           <button
             type="button"
             onClick={handleLookupByServiceOrder}
             disabled={isLookingUp || !serviceOrderLookupValue.trim()}
-            className="mt-2 inline-flex items-center justify-center rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Lookup by Service Order
+            {isLookingUp && (
+              <svg
+                className="h-4 w-4 animate-spin text-emerald-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            )}
+            {isLookingUp ? "Searching…" : "Look Up by Service Order"}
           </button>
         </label>
 
@@ -351,22 +382,45 @@ export default function EmergencyLeakServiceForm({
           className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
           htmlFor="lookupEmail"
         >
-          Lookup Email
+          Email on File
           <input
             id="lookupEmail"
             name="lookupEmail"
             value={emailLookupValue}
             onChange={(event) => setEmailLookupValue(event.target.value)}
             type="email"
+            placeholder="e.g. john@company.com"
             className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
           />
           <button
             type="button"
             onClick={handleLookupByEmail}
             disabled={isLookingUp || !emailLookupValue.trim()}
-            className="mt-2 inline-flex items-center justify-center rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Lookup by Email
+            {isLookingUp && (
+              <svg
+                className="h-4 w-4 animate-spin text-emerald-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            )}
+            {isLookingUp ? "Searching…" : "Look Up by Email"}
           </button>
         </label>
 

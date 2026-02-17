@@ -3,7 +3,7 @@ import {
   ServiceIntakeResponse,
   ServiceOrderResponsePayload,
   ServiceOrderLookupResponse,
-  ServiceOrderRequestPayload,
+  ServiceOrderIntakeRequest,
   SubmitServiceOrderResponse,
 } from "@/types/emergencyLeakService";
 import { fetchJson } from "@/helpers/unifiedFetcher";
@@ -92,7 +92,7 @@ export async function lookupServiceIntake(
 }
 
 export async function submitServiceOrderRequest(
-  payload: ServiceOrderRequestPayload,
+  payload: ServiceOrderIntakeRequest,
 ): Promise<SubmitServiceOrderResponse> {
   const result = await fetchJson<Partial<SubmitServiceOrderResponse>>(
     "/api/emergency-leak-service",

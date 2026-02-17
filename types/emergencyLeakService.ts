@@ -126,6 +126,70 @@ export type ServiceOrderRequestPayload = {
   additionalLeaks: LeakDetailsPayload[];
 };
 
+// --- Service Order Intake API (camelCase, numeric enums) ---
+
+export type ServiceOrderIntakeClient = {
+  dynamoAccountId: number | null;
+  dynamoContactId: number | null;
+  accountName: string;
+  accountContactName: string;
+  email: string;
+  phone: string;
+};
+
+export type ServiceOrderIntakeBilling = {
+  dynamoId: number | null;
+  entityBillToName: string;
+  billToAddress: string;
+  billToAddress2: string;
+  billToCity: string;
+  billToZip: string;
+  billToEmail: string;
+};
+
+export type ServiceOrderIntakeLeakDetails = {
+  dynamoId: number | null;
+  jobNo: string;
+  jobDate: string | null;
+  siteName: string;
+  siteAddress: string;
+  siteAddress2: string;
+  siteCity: string;
+  siteZip: string;
+  tenantBusinessName: string;
+  tenantContactName: string;
+  tenantContactPhone: string;
+  tenantContactCell: string;
+  tenantContactEmail: string;
+  hoursOfOperation: string;
+  leakLocation: number;
+  leakNear: number;
+  leakNearOther: string;
+  hasAccessCode: boolean;
+  accessCode: string;
+  isSaturdayAccessPermitted: boolean;
+  isKeyRequired: boolean;
+  isLadderRequired: boolean;
+  roofPitch: number;
+  comments: string;
+};
+
+export type ServiceOrderIntakeRequest = {
+  client: ServiceOrderIntakeClient;
+  billing: ServiceOrderIntakeBilling;
+  leakDetails: ServiceOrderIntakeLeakDetails;
+  additionalLeaks: ServiceOrderIntakeLeakDetails[];
+};
+
+export type ServiceOrderIntakeResponse = {
+  success: boolean;
+  referenceId: string;
+  queueName: string;
+  requestDate: string;
+  createdAt: string;
+  message: string;
+};
+
 export type ServiceOrderResponsePayload = {
   Id: number;
   RequestDate: string;

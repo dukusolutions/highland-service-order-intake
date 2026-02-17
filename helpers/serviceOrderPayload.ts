@@ -1,62 +1,84 @@
 import {
   IntakeFormData,
-  LeakDetailsPayload,
-  ServiceOrderRequestPayload,
+  LeakLocationName,
+  LeakNearTypeName,
+  RoofPitchTypeName,
+  ServiceOrderIntakeLeakDetails,
+  ServiceOrderIntakeRequest,
 } from "@/types/emergencyLeakService";
+
+const LEAK_LOCATION_MAP: Record<LeakLocationName, number> = {
+  Front: 1,
+  Middle: 2,
+  Back: 3,
+};
+
+const LEAK_NEAR_MAP: Record<LeakNearTypeName, number> = {
+  HVACDuct: 1,
+  Skylight: 2,
+  Wall: 3,
+  Drain: 4,
+  Other: 5,
+};
+
+const ROOF_PITCH_MAP: Record<RoofPitchTypeName, number> = {
+  FlatRoof: 1,
+  SteepShingleTile: 2,
+};
 
 function toLeakDetailsPayload(
   property: IntakeFormData["leakingProperties"][number],
-): LeakDetailsPayload {
+): ServiceOrderIntakeLeakDetails {
   return {
-    DynamoId: property.dynamoId,
-    JobNo: property.jobNo,
-    SiteName: property.siteName,
-    SiteAddress: property.siteAddress,
-    SiteAddress2: property.siteAddress2,
-    SiteCity: property.siteCity,
-    SiteZip: property.siteZip,
-    TenantBusinessName: property.tenantBusinessName,
-    TenantContactName: property.tenantContactName,
-    TenantContactPhone: property.tenantContactPhone,
-    TenantContactCell: property.tenantContactCell,
-    TenantContactEmail: property.tenantContactEmail,
-    HoursOfOperation: property.hoursOfOperation,
-    LeakLocation: property.leakLocation,
-    LeakNear: property.leakNear,
-    LeakNearOther: property.leakNearOther,
-    HasAccessCode: property.hasAccessCode,
-    AccessCode: property.accessCode,
-    IsSaturdayAccessPermitted: property.isSaturdayAccessPermitted,
-    IsKeyRequired: property.isKeyRequired,
-    IsLadderRequired: property.isLadderRequired,
-    RoofPitch: property.roofPitch,
-    Comments: property.comments,
+    dynamoId: property.dynamoId,
+    jobNo: property.jobNo,
+    jobDate: null,
+    siteName: property.siteName,
+    siteAddress: property.siteAddress,
+    siteAddress2: property.siteAddress2,
+    siteCity: property.siteCity,
+    siteZip: property.siteZip,
+    tenantBusinessName: property.tenantBusinessName,
+    tenantContactName: property.tenantContactName,
+    tenantContactPhone: property.tenantContactPhone,
+    tenantContactCell: property.tenantContactCell,
+    tenantContactEmail: property.tenantContactEmail,
+    hoursOfOperation: property.hoursOfOperation,
+    leakLocation: LEAK_LOCATION_MAP[property.leakLocation],
+    leakNear: LEAK_NEAR_MAP[property.leakNear],
+    leakNearOther: property.leakNearOther,
+    hasAccessCode: property.hasAccessCode,
+    accessCode: property.accessCode,
+    isSaturdayAccessPermitted: property.isSaturdayAccessPermitted,
+    isKeyRequired: property.isKeyRequired,
+    isLadderRequired: property.isLadderRequired,
+    roofPitch: ROOF_PITCH_MAP[property.roofPitch],
+    comments: property.comments,
   };
 }
 
 export function buildServiceOrderRequestPayload(
   formData: IntakeFormData,
-): ServiceOrderRequestPayload {
+): ServiceOrderIntakeRequest {
   const [primaryProperty, ...additionalProperties] = formData.leakingProperties;
 
   return {
-    requestDate: new Date().toISOString(),
     client: {
-      DynamoAccountId: formData.clientDynamoAccountId,
-      DynamoCountId: formData.clientDynamoCountId,
-      AccountName: formData.clientAccountName,
-      AccountContactName: formData.clientAccountContactName,
-      Email: formData.clientEmail,
-      Phone: formData.clientPhone,
+      dynamoAccountId: formData.clientDynamoAccountId,
+      dynamoContactId: formData.clientDynamoCountId,
+      accountName: formData.clientAccountName,
+      accountContactName: formData.clientAccountContactName,
+      email: formData.clientEmail,
+      phone: formData.clientPhone,
     },
     billing: {
-      DynamoId: formData.billingDynamoId,
-      EntityBillToName: formData.billingEntityBillToName,
-      BillToAddress: formData.billingBillToAddress,
-      BillToAddress2: formData.billingBillToAddress2,
-      BillToCity: formData.billingBillToCity,
-      BillToZip: formData.billingBillToZip,
-      BillToEmail: formData.billingBillToEmail,
+      dynamoId: formData.billingDynamoId,
+      entityBillToName: formData.billingEntityBillToName,
+      billToAddress: formData.billingBillToAddress,
+      billToAddress2: formData.billingBillToAddress2,
+      billToCity: formData.billingBillToCity,
+      billToZip: formData.billingBillToZip,
+      billToEmail: formData.billingBillToEmail,
     },
     leakDetails: toLeakDetailsPayload(primaryProperty),
     additionalLeaks: additionalProperties.map((property) =>
