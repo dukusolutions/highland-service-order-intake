@@ -6,6 +6,7 @@ import {
   INITIAL_FORM_DATA,
   MOCK_FORM_DATA,
   MOCK_LOOKUP_VALUES,
+  isFormDirty,
   validateEmergencyLeakServiceForm,
 } from "@/helpers/emergencyLeakServiceForm";
 import {
@@ -61,6 +62,7 @@ export default function EmergencyLeakServiceForm({
     "idle",
   );
   const [activeReferenceId, setActiveReferenceId] = useState("");
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const activeProperty = useMemo(
     () => formData.leakingProperties[0],
@@ -315,7 +317,16 @@ export default function EmergencyLeakServiceForm({
     setActiveReferenceId("");
     setIsConfirmModalOpen(false);
     setIsSuccessModalOpen(false);
+    setIsResetModalOpen(false);
     window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+  }
+
+  function handleResetClick() {
+    if (isFormDirty(formData, serviceOrderLookupValue, emailLookupValue)) {
+      setIsResetModalOpen(true);
+    } else {
+      clearForm();
+    }
   }
 
   function handleStatusDismiss() {
@@ -343,22 +354,22 @@ export default function EmergencyLeakServiceForm({
       onSubmit={onSubmit}
       noValidate
     >
-      <section className="rounded-lg border border-slate-300">
+      <section className="overflow-hidden rounded-lg border border-slate-300">
         <button
           type="button"
           onClick={() => setIsLookupOpen((prev) => !prev)}
-          className="flex w-full items-center justify-between p-4 text-left"
+          className="flex w-full items-center justify-between bg-[#1e2a3a] p-4 text-left"
         >
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-white">
               Save Time — Prefill Your Info
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            <p className="mt-1 text-sm leading-relaxed text-slate-300">
               Look up a previous service order to auto-fill your details.
             </p>
           </div>
           <svg
-            className={`h-5 w-5 shrink-0 text-slate-500 transition-transform ${
+            className={`h-5 w-5 shrink-0 text-white transition-transform ${
               isLookupOpen ? "rotate-180" : ""
             }`}
             xmlns="http://www.w3.org/2000/svg"
@@ -470,6 +481,30 @@ export default function EmergencyLeakServiceForm({
               </button>
             </label>
 
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleResetClick}
+                className="inline-flex items-center justify-center gap-1.5 rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+              >
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.992 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"
+                  />
+                </svg>
+                Reset All
+              </button>
+            </div>
+
             {lookupMessage ? (
               <p className="md:col-span-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
                 {lookupMessage}
@@ -568,18 +603,24 @@ export default function EmergencyLeakServiceForm({
         formData={formData}
         errors={errors}
         onFieldChange={updateField}
+        prefillClients={lookupResults?.clients ?? []}
+        onPrefillClient={applyClientSelection}
       />
 
       <BillingInfoSection
         formData={formData}
         errors={errors}
         onFieldChange={updateField}
+        prefillBillings={lookupResults?.billings ?? []}
+        onPrefillBilling={applyBillingSelection}
       />
 
       <LeakingPropertySection
         property={activeProperty}
         errors={errors}
         onPropertyChange={updatePropertyField}
+        prefillLeaks={lookupResults?.leaks ?? []}
+        onPrefillLeak={applyLeakSelection}
       />
 
       <div className="-mt-4">
@@ -684,6 +725,34 @@ export default function EmergencyLeakServiceForm({
                 className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               >
                 Submit Another
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isResetModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 p-4">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+            <p className="text-base font-bold text-slate-900">Reset Form?</p>
+            <p className="mt-3 text-sm text-slate-700">
+              You have entered data on this form. Are you sure you want to reset
+              all fields and clear all filters? This action cannot be undone.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsResetModalOpen(false)}
+                className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={clearForm}
+                className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Yes, Reset Everything
               </button>
             </div>
           </div>
