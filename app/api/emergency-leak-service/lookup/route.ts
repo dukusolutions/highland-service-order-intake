@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import https from "https";
 import { ServiceIntakeRequestPayload } from "@/types/emergencyLeakService";
 
-const lookupApiUrl = process.env.SERVICE_INTAKE_API_URL;
+const lookupApiUrl = `${process.env.SERVICE_INTAKE_API_URL}/api/ServiceIntake/CustomerLookup`;
 const lookupApiKey = process.env.SERVICE_INTAKE_API_KEY;
 
 /**
@@ -17,6 +17,7 @@ function getWithJsonBody(
 ): Promise<{ status: number; data: string }> {
   return new Promise((resolve, reject) => {
     const parsed = new URL(url);
+    console.log("Making GET request to lookup API", { url, body: jsonBody });
     const req = https.request(
       {
         hostname: parsed.hostname,

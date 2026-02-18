@@ -2,6 +2,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Create a .env.local file at the root of your repo
+
+Ensure you have the following three entries
+
+SERVICE_INTAKE_API_URL=<<Dynamo Web Service URL Base>> i.e. https://hcr-staging.dukusolutions.com/ws
+SERVICE_INTAKE_API_KEY=<<Dynaamo Web Service API Key>> 
+SERVICE_ORDER_INTAKE_URL=<<Azure Function Url with query string key all in one>> i.e. https://dynamo-highland-functions.azurewebsites.net/api/service-order-intake?code=testervalue1
+
 First, run the development server:
 
 ```bash

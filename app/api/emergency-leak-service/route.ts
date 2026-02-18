@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { ServiceOrderIntakeResponse } from "@/types/emergencyLeakService";
 
 const SERVICE_ORDER_INTAKE_URL = process.env.SERVICE_ORDER_INTAKE_URL;
-const SERVICE_ORDER_INTAKE_KEY = process.env.SERVICE_ORDER_INTAKE_KEY;
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 500;
@@ -37,11 +36,11 @@ async function postWithRetry(
 }
 
 export async function POST(request: Request) {
-  if (!SERVICE_ORDER_INTAKE_URL || !SERVICE_ORDER_INTAKE_KEY) {
+  if (!SERVICE_ORDER_INTAKE_URL) {
     return NextResponse.json(
       {
         message:
-          "Service order intake API is not configured. Set SERVICE_ORDER_INTAKE_URL and SERVICE_ORDER_INTAKE_KEY.",
+          "Service order intake API is not configured. Set SERVICE_ORDER_POST_URL.",
       },
       { status: 500 },
     );
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const url = `${SERVICE_ORDER_INTAKE_URL}?code=${encodeURIComponent(SERVICE_ORDER_INTAKE_KEY)}`;
+  const url = `${SERVICE_ORDER_INTAKE_URL}`;
 
   try {
     const response = await postWithRetry(url, JSON.stringify(body));
