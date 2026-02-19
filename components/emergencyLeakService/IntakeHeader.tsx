@@ -5,6 +5,7 @@ import { useState } from "react";
 
 type IntakeHeaderProps = {
   onReset?: () => void;
+  isResetDisabled?: boolean;
   lookupValue: string;
   onLookupValueChange: (value: string) => void;
   onLookupByEmail: () => void;
@@ -15,6 +16,7 @@ type IntakeHeaderProps = {
 
 export default function IntakeHeader({
   onReset,
+  isResetDisabled,
   lookupValue,
   onLookupValueChange,
   onLookupByEmail,
@@ -150,8 +152,9 @@ export default function IntakeHeader({
               <button
                 type="button"
                 onClick={onReset}
+                disabled={isResetDisabled}
                 title="Clear all form fields and start over"
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-red-400/40 bg-red-900/25 px-3 py-1.5 text-sm font-medium text-red-200 transition hover:border-red-400/60 hover:bg-red-900/40 hover:text-red-100"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-red-400/40 bg-red-900/25 px-3 py-1.5 text-sm font-medium text-red-200 transition hover:border-red-400/60 hover:bg-red-900/40 hover:text-red-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <svg
                   className="h-3.5 w-3.5"

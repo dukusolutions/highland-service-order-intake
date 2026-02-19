@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { LuFileWarning } from "react-icons/lu";
+
 import {
   INITIAL_FORM_DATA,
   MOCK_FORM_DATA,
@@ -367,6 +369,9 @@ export default function EmergencyLeakServiceForm() {
     <form onSubmit={onSubmit} noValidate>
       <IntakeHeader
         onReset={handleResetClick}
+        isResetDisabled={
+          !isFormDirty(formData, serviceOrderLookupValue, emailLookupValue)
+        }
         lookupValue={serviceOrderLookupValue || emailLookupValue}
         onLookupValueChange={(v) => {
           setServiceOrderLookupValue(v);
@@ -546,37 +551,39 @@ export default function EmergencyLeakServiceForm() {
           onPrefillLeak={applyLeakSelection}
         />
 
-        <div className="-mt-4">
+        {/* <div className="-mt-4">
           <button
             type="button"
             className="inline-flex items-center justify-center border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
           >
             Add Property
           </button>
-        </div>
+        </div> */}
 
-        <div className="flex flex-col gap-3 border-t border-slate-300 pt-6 md:flex-row md:justify-end">
-          <button
-            type="button"
-            onClick={clearForm}
-            className="inline-flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Clear Form
-          </button>
-          <button
+        <div className="flex flex-col gap-3  md:flex-row md:justify-end">
+          {/* <button
             type="button"
             onClick={prefillMockData}
             className="inline-flex items-center justify-center rounded-md border border-[#2f9750] px-6 py-3 text-sm font-semibold text-[#2f9750] transition hover:bg-[#2f9750]/10"
           >
             Prefill Mock Data
-          </button>
+          </button> */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-md bg-[#2f9750] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#268a45] disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full inline-flex items-center justify-center rounded-md gap-2 bg-red-700 px-6 py-4 text-2xl font-bold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? "Submitting..." : "Submit Request"}
+            <LuFileWarning className="text-3xl text-white" />
+
+            {isSubmitting ? "Submitting..." : "SUBMIT REQUEST"}
           </button>
+          {/* <button
+            type="button"
+            onClick={clearForm}
+            className="inline-flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            Clear Form
+          </button> */}
         </div>
 
         {isConfirmModalOpen ? (
