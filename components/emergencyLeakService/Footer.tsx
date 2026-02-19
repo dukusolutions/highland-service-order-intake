@@ -31,7 +31,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1e2a3a] text-slate-300">
+    <footer className="bg-[#163832] text-slate-300">
       {/* Main footer content */}
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-10 md:px-10">
         {/* Logo */}
