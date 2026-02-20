@@ -571,7 +571,7 @@ export default function EmergencyLeakServiceForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full inline-flex items-center justify-center rounded-md gap-2 bg-red-700 px-6 py-4 text-2xl font-bold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full inline-flex items-center justify-center rounded-md gap-2 bg-slate-700 px-6 py-4 text-2xl font-bold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <LuFileWarning className="text-3xl text-white" />
 

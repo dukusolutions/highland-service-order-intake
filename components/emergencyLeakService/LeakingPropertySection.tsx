@@ -276,6 +276,14 @@ export default function LeakingPropertySection({
               <option value="SteepShingleTile">Steep Shingle/Tile</option>
             </select>
           </label>
+          <FormInput
+            id="accessCode"
+            label="Access Code"
+            value={displayed.accessCode}
+            onChange={handleInput("accessCode")}
+            error={errors.accessCode}
+            previewing={isPreviewing}
+          />
 
           <div className="md:col-start-2">
             <div className="flex w-full flex-col gap-2 rounded-md border border-slate-200 p-3">
@@ -330,18 +338,9 @@ export default function LeakingPropertySection({
                 Ladder Required
               </label>
             </div>
-          </div>
+          </div>       
+          
 
-          <div className="md:col-start-2">
-            <FormInput
-              id="accessCode"
-              label="Access Code"
-              value={displayed.accessCode}
-              onChange={handleInput("accessCode")}
-              error={errors.accessCode}
-              previewing={isPreviewing}
-            />
-          </div>
 
           <FormTextarea
             id="comments"

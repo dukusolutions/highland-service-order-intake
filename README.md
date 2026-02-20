@@ -113,7 +113,7 @@ Pull up an existing submitted request using the `referenceId` returned from subm
 **Example request:**
 
 ```
-GET /api/emergency-leak-service/status?referenceId=7568e1e0-1d0c-4f22-bd1a-303ee95fb7b7
+GET /api/emergency-leak-service?referenceId=7568e1e0-1d0c-4f22-bd1a-303ee95fb7b7
 ```
 
 **Example response:**
