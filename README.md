@@ -73,7 +73,9 @@ Submit a new emergency leak service request. The Azure Function queues it for pr
   "client": { "dynamoAccountId": null, "dynamoContactId": null, "accountName": "...", "accountContactName": "...", "email": "...", "phone": "..." },
   "billing": { "dynamoId": null, "entityBillToName": "...", "billToAddress": "...", "billToAddress2": "...", "billToCity": "...", "billToZip": "...", "billToEmail": "..." },
   "leakDetails": { "dynamoId": null, "jobNo": "", "jobDate": null, "siteName": "...", "siteAddress": "...", ... },
-  "additionalLeaks": []
+  "additionalLeaks": [],
+  "SignatureData": "data:image/png;base64,...",
+  "SignatureName": "John Smith"
 }
 ```
 
@@ -89,6 +91,8 @@ Submit a new emergency leak service request. The Azure Function queues it for pr
   "message": "Service order request received and queued for processing."
 }
 ```
+
+After a successful submission, the server also fires a best-effort `POST /api/ServiceIntake/TriggerQueueProcessing` call to kick off backend processing.
 
 **Save the `referenceId`** — you need it to check order status.
 
@@ -197,26 +201,45 @@ GET /api/emergency-leak-service?referenceId=7568e1e0-1d0c-4f22-bd1a-303ee95fb7b7
 
 ---
 
+## Key Features
+
+- **Multiple properties** — add multiple leaking properties per service order; each appears in an editable table
+- **Auto-add on submit** — if the property editor has unsaved valid data when you submit, it's automatically added
+- **Customer lookup** — prefill form fields by searching service order number or email
+- **Signature capture** — `react-signature-canvas` records a base64 PNG sent as `SignatureData`
+- **Signature name mirroring** — the account contact name auto-populates the signature name field in real time
+- **Billing terms acknowledgment** — pricing verbiage with a required checkbox before submission
+- **Conditional fields** — "Leak Near Other" textarea only appears when "Other" is selected; Access Code input only appears when "Has Access Code" is checked
+- **Order status tracking** — view submitted order status by reference ID
+- **Draft persistence** — form state is saved to `localStorage`
+
+---
+
 ## Project Structure
 
 ```
 app/
   api/emergency-leak-service/
-    route.ts              # POST — submit new order (Azure Function proxy)
+    route.ts              # POST — submit new order (Azure Function proxy + TriggerQueueProcessing)
     lookup/route.ts       # POST — customer lookup (staging API proxy)
+    prefill/route.ts      # POST — prefill data
     status/route.ts       # GET  — order status (staging API proxy)
   page.tsx                # Main page
 components/
-  EmergencyLeakServiceForm.tsx        # Main form component
+  EmergencyLeakServiceForm.tsx        # Main form orchestrator
   emergencyLeakService/
-    ContactInfoSection.tsx
-    BillingInfoSection.tsx
-    LeakingPropertySection.tsx
+    ContactInfoSection.tsx            # Account & contact info fields
+    BillingInfoSection.tsx            # Billing address fields
+    LeakingPropertySection.tsx        # Property editor with conditional fields
+    PropertyTable.tsx                 # Table of added properties
+    PrefillDropdown.tsx               # Customer lookup result selector
+    SignatureSection.tsx              # Signature canvas, name, billing terms
     OrderStatusPanel.tsx              # Post-submit status view
-    IntakeHeader.tsx
-    FormInput.tsx
+    IntakeHeader.tsx                  # Page header with lookup inputs
+    FormInput.tsx                     # Reusable input & textarea components
+    Footer.tsx                        # Form footer
 helpers/
-  emergencyLeakServiceForm.ts         # Validation, initial data, mocks
+  emergencyLeakServiceForm.ts         # Validation, initial data, dirty checks
   serviceOrderApi.ts                  # Client-side API functions
   serviceOrderPayload.ts              # Form data → API payload transform
   unifiedFetcher.ts                   # Generic fetch wrapper
