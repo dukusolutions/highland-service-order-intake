@@ -53,7 +53,7 @@ export function FormInput({
 
   return (
     <label
-      className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
+      className="flex flex-col gap-1 text-sm font-semibold text-slate-800"
       htmlFor={id}
     >
       {label}
@@ -66,7 +66,7 @@ export function FormInput({
         type={isTel ? "tel" : type}
         inputMode={isTel ? "tel" : undefined}
         placeholder={placeholder}
-        className={`w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
+        className={`w-full rounded-md border px-3 py-1.5 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
           previewing
             ? "border-amber-300 bg-amber-50"
             : "border-slate-300 bg-white"
@@ -103,7 +103,7 @@ export function FormTextarea({
   return (
     <label
       className={
-        className ?? "flex flex-col gap-2 text-sm font-semibold text-slate-800"
+        className ?? "flex flex-col gap-1 text-sm font-semibold text-slate-800"
       }
       htmlFor={id}
     >
@@ -114,7 +114,7 @@ export function FormTextarea({
         value={value}
         onChange={onChange}
         rows={rows}
-        className={`w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
+        className={`w-full rounded-md border px-3 py-1.5 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
           previewing
             ? "border-amber-300 bg-amber-50"
             : "border-slate-300 bg-white"

@@ -107,14 +107,13 @@ export default function LeakingPropertySection({
   const isEditing = editingIndex !== null;
 
   return (
-    <section className="overflow-hidden rounded-lg border border-slate-300">
-      <div className="bg-slate-700 px-4 py-3">
+    <section className="rounded-lg border border-slate-300">
+      <div className="rounded-t-lg bg-slate-700 px-4 py-3">
         <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-          <LuHouse className="text-xl" /> Property Info
+          <LuHouse className="text-xl" /> Property and Leak Info
           {properties.length > 0 && (
             <span className="ml-2 text-sm font-normal text-slate-300">
-              ({properties.length}{" "}
-              {properties.length === 1 ? "property" : "properties"})
+              ({properties.length} {properties.length === 1 ? "leak" : "leaks"})
             </span>
           )}
         </h2>
@@ -135,13 +134,11 @@ export default function LeakingPropertySection({
         )}
 
         {/* ── Editor heading ── */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <h3 className="text-sm font-bold text-slate-700">
-            {isEditing
-              ? `Editing Property #${editingIndex + 1}`
-              : "New Property"}
+            {isEditing ? `Editing Property #${editingIndex + 1}` : "New Leak"}
           </h3>
-        </div>
+        </div> */}
 
         {options.length > 0 && (
           <div className="mb-5">
@@ -153,7 +150,7 @@ export default function LeakingPropertySection({
             />
           </div>
         )}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
           <FormInput
             id="siteName"
             label="Site Name*"
@@ -431,7 +428,11 @@ export default function LeakingPropertySection({
             className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-6 py-2.5 text-base font-semibold text-white transition hover:bg-emerald-700"
           >
             <LuHouse className="text-lg" />
-            {isEditing ? "Update Property" : "Add Property"}
+            {isEditing
+              ? "Update Property"
+              : properties.length === 0
+                ? "Add Leak"
+                : "Add Another Leak"}
           </button>
         </div>
 

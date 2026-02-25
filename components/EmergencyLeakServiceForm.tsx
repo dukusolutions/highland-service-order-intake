@@ -76,6 +76,7 @@ export default function EmergencyLeakServiceForm() {
   // const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [submitRequestId, setSubmitRequestId] = useState("");
   const [submitSuccessMessage, setSubmitSuccessMessage] = useState("");
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -499,23 +500,37 @@ export default function EmergencyLeakServiceForm() {
     }
 
     const validation = validateEmergencyLeakServiceForm(submissionFormData);
-    if (!signatureDataUrl) {
-      validation.signature = "Signature is required.";
-    }
-    if (!signatureName.trim()) {
-      validation.signatureName = "Name is required.";
-    }
-    if (!billingTermsAcknowledged) {
-      validation.billingTermsAcknowledged =
-        "You must acknowledge the billing terms.";
-    }
     setErrors(validation);
 
     if (Object.keys(validation).length > 0) {
       return;
     }
 
-    setIsConfirmModalOpen(true);
+    // Form data is valid — open the signature modal
+    setIsSignatureModalOpen(true);
+  }
+
+  function handleSignatureSubmit() {
+    const sigErrors: ValidationErrors = {};
+    if (!signatureDataUrl) {
+      sigErrors.signature = "Signature is required.";
+    }
+    if (!signatureName.trim()) {
+      sigErrors.signatureName = "Name is required.";
+    }
+    if (!billingTermsAcknowledged) {
+      sigErrors.billingTermsAcknowledged =
+        "You must acknowledge the billing terms.";
+    }
+    setErrors(sigErrors);
+
+    if (Object.keys(sigErrors).length > 0) {
+      return;
+    }
+
+    // Everything valid — submit
+    setIsSignatureModalOpen(false);
+    confirmSubmit();
   }
 
   function prefillMockData() {
@@ -551,6 +566,7 @@ export default function EmergencyLeakServiceForm() {
     setSubmitState("idle");
     setActiveReferenceId("");
     setIsConfirmModalOpen(false);
+    setIsSignatureModalOpen(false);
     setIsSuccessModalOpen(false);
     setIsResetModalOpen(false);
     window.localStorage.removeItem(DRAFT_STORAGE_KEY);
@@ -570,6 +586,7 @@ export default function EmergencyLeakServiceForm() {
     setSubmitRequestId("");
     setSubmitSuccessMessage("");
     setIsSuccessModalOpen(false);
+    setIsSignatureModalOpen(false);
     setSignatureName("");
     setBillingTermsAcknowledged(false);
     setSignatureDataUrl("");
@@ -589,7 +606,7 @@ export default function EmergencyLeakServiceForm() {
           isLookingUp={isLookingUp}
           lookupMessage={lookupMessage}
         />
-        <div className="space-y-8 px-6 py-8 md:px-10">
+        <div className="space-y-6 px-6 py-6 md:px-10">
           <OrderStatusPanel
             referenceId={activeReferenceId}
             onDismiss={handleStatusDismiss}
@@ -617,7 +634,7 @@ export default function EmergencyLeakServiceForm() {
         lookupMessage={lookupMessage}
       />
 
-      <div className="space-y-8 px-6 py-8 md:px-10">
+      <div className="space-y-6 px-6 py-6 md:px-10">
         {/* Old collapsible lookup section — replaced by header inline lookup
         <section className="overflow-hidden rounded-lg border border-slate-300">
           <button
@@ -795,27 +812,6 @@ export default function EmergencyLeakServiceForm() {
           onPrefillLeak={applyLeakSelection}
         />
 
-        <SignatureSection
-          value={signatureDataUrl}
-          onChange={setSignatureDataUrl}
-          error={errors.signature}
-          signatureName={signatureName}
-          onSignatureNameChange={setSignatureName}
-          signatureNameError={errors.signatureName}
-          billingTermsAcknowledged={billingTermsAcknowledged}
-          onBillingTermsChange={(checked) => {
-            setBillingTermsAcknowledged(checked);
-            if (checked) {
-              setErrors((prev) => {
-                const next = { ...prev };
-                delete next.billingTermsAcknowledged;
-                return next;
-              });
-            }
-          }}
-          billingTermsError={errors.billingTermsAcknowledged}
-        />
-
         {/* Show error when submit is attempted with no properties */}
         {errors.siteName === "At least one property is required." &&
           formData.leakingProperties.length === 0 && (
@@ -825,23 +821,27 @@ export default function EmergencyLeakServiceForm() {
           )}
 
         <div className="flex flex-col gap-3  md:flex-row md:justify-end">
-          <button
-            type="button"
-            onClick={() => {
-              window.localStorage.removeItem(DRAFT_STORAGE_KEY);
-              clearForm();
-            }}
-            className="inline-flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Clear Local Storage
-          </button>
-          <button
-            type="button"
-            onClick={prefillMockData}
-            className="inline-flex items-center justify-center rounded-md border border-[#2f9750] px-6 py-3 text-sm font-semibold text-[#2f9750] transition hover:bg-[#2f9750]/10"
-          >
-            Prefill Mock Data
-          </button>
+          {/* {process.env.NODE_ENV === "development" && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+                  clearForm();
+                }}
+                className="inline-flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Clear Local Storage
+              </button>
+              <button
+                type="button"
+                onClick={prefillMockData}
+                className="inline-flex items-center justify-center rounded-md border border-[#2f9750] px-6 py-3 text-sm font-semibold text-[#2f9750] transition hover:bg-[#2f9750]/10"
+              >
+                Prefill Mock Data
+              </button>
+            </>
+          )} */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -892,9 +892,56 @@ export default function EmergencyLeakServiceForm() {
           </div>
         ) : null}
 
+        {isSignatureModalOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 p-4">
+            <div className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white shadow-xl">
+              <SignatureSection
+                value={signatureDataUrl}
+                onChange={setSignatureDataUrl}
+                error={errors.signature}
+                signatureName={signatureName}
+                onSignatureNameChange={setSignatureName}
+                signatureNameError={errors.signatureName}
+                billingTermsAcknowledged={billingTermsAcknowledged}
+                onBillingTermsChange={(checked) => {
+                  setBillingTermsAcknowledged(checked);
+                  if (checked) {
+                    setErrors((prev) => {
+                      const next = { ...prev };
+                      delete next.billingTermsAcknowledged;
+                      return next;
+                    });
+                  }
+                }}
+                billingTermsError={errors.billingTermsAcknowledged}
+              />
+              <div className="flex justify-end gap-3 border-t border-slate-200 px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignatureModalOpen(false);
+                    setErrors({});
+                  }}
+                  className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSignatureSubmit}
+                  disabled={isSubmitting}
+                  className="inline-flex items-center justify-center rounded-md bg-[#2f9750] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#268a45] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSubmitting ? "Submitting..." : "Confirm & Submit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {isSuccessModalOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 p-4">
-            <div className="w-full max-w-md rounded-xl border border-emerald-200 bg-emerald-50 p-6 shadow-xl">
+            <div className="w-full max-w-md rounded-xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
               <div className="flex items-center gap-3">
                 <Image
                   src="/New-Logo-Final-White-1.svg"
@@ -907,30 +954,20 @@ export default function EmergencyLeakServiceForm() {
                   Request Submitted
                 </p>
               </div>
-              <p className="mt-4 text-sm text-emerald-900">
-                {submitSuccessMessage ||
-                  "Your emergency service request was submitted successfully."}
+              <p className="mt-4 text-sm text-slate-800">
+                Your request has been successfully submitted, you will receive
+                further information via email soon.
               </p>
-              <p className="mt-3 rounded-md border border-emerald-300 bg-white px-3 py-2 text-sm text-emerald-900">
-                Reference ID:{" "}
-                <span className="font-bold">
-                  {submitRequestId || "Pending"}
-                </span>
-              </p>
-              <div className="mt-5 flex justify-end gap-3">
+              <div className="mt-5 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setIsSuccessModalOpen(false)}
-                  className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  onClick={() => {
+                    clearForm();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
                 >
-                  View Order Status
-                </button>
-                <button
-                  type="button"
-                  onClick={handleStatusDismiss}
-                  className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                >
-                  Submit Another
+                  OK
                 </button>
               </div>
             </div>

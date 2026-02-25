@@ -114,7 +114,7 @@ export default function PrefillDropdown<T>({
       </div>
 
       {isOpen && options.length > 0 && (
-        <ul className="absolute left-0 right-0 z-30 mt-1 max-h-60 overflow-auto rounded-md border border-slate-200 bg-white shadow-lg">
+        <ul className="absolute bottom-full left-0 right-0 z-30 mb-1 max-h-60 overflow-auto rounded-md border-2 border-slate-500 bg-white shadow-lg">
           {options.map((option, index) => (
             <li
               key={index}

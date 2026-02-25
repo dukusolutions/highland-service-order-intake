@@ -49,8 +49,8 @@ export default function SignatureSection({
   }
 
   return (
-    <section className="overflow-hidden rounded-lg border border-slate-300">
-      <div className="bg-slate-700 px-4 py-3">
+    <section className="rounded-lg border border-slate-300">
+      <div className="rounded-t-lg bg-slate-700 px-4 py-3">
         <h2 className="flex items-center gap-2 text-lg font-bold text-white">
           <LuPenLine className="text-xl" /> Signature
         </h2>
@@ -62,29 +62,13 @@ export default function SignatureSection({
             for the service call or the repairs. Our billing rate for
             non-warranty leak service calls is as follows:
           </p>
-          <p className="mt-2 font-semibold">
+          <p className="mt-2">
             Pricing &ndash; $850 Trip Charge &ndash; includes travel time,
             setup, breakdown and 2 man-hours labor and materials.
           </p>
-          <p className="mt-1 font-semibold">
+          <p className="mt-1">
             Additional time will be charged at $195 per man-hour.
           </p>
-          <br />
-          <label className="flex items-start gap-2 text-sm font-semibold text-slate-800">
-            <input
-              type="checkbox"
-              checked={billingTermsAcknowledged}
-              onChange={(e) => onBillingTermsChange(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-            />
-            I acknowledge reviewing the billing terms for non-warranty work
-          </label>
-
-          {billingTermsError && (
-            <span className="mt-1 block text-xs font-medium text-red-600">
-              {billingTermsError}
-            </span>
-          )}
         </div>
 
         <div className="mb-4">
@@ -156,6 +140,24 @@ export default function SignatureSection({
             <LuEraser className="h-3.5 w-3.5" />
             Clear
           </button>
+        </div>
+
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <label className="flex items-start gap-2 text-sm font-semibold text-slate-800">
+            <input
+              type="checkbox"
+              checked={billingTermsAcknowledged}
+              onChange={(e) => onBillingTermsChange(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+            />
+            I acknowledge reviewing the billing terms for non-warranty work
+          </label>
+
+          {billingTermsError && (
+            <span className="mt-1 block text-xs font-medium text-red-600">
+              {billingTermsError}
+            </span>
+          )}
         </div>
       </div>
     </section>

@@ -148,9 +148,6 @@ function Detail({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** Auto-refresh interval in milliseconds (30 s). */
-const POLL_INTERVAL_MS = 30_000;
-
 export default function OrderStatusPanel({
   referenceId,
   onDismiss,
@@ -179,14 +176,6 @@ export default function OrderStatusPanel({
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
-
-  // Poll every 30 s while the order is still active
-  useEffect(() => {
-    if (!status || status === "COMPLETED" || status === "CANCELLED") return;
-
-    const interval = setInterval(fetchStatus, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [status, fetchStatus]);
 
   if (isLoading) {
     return (

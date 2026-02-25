@@ -60,8 +60,8 @@ export default function ContactInfoSection({
   );
 
   return (
-    <section className="overflow-hidden rounded-lg border border-slate-300">
-      <div className="bg-slate-700 px-4 py-3">
+    <section className="rounded-lg border border-slate-300">
+      <div className="rounded-t-lg bg-slate-700 px-4 py-3">
         <h2 className="flex items-center gap-2 text-lg font-bold text-white">
           <LuContact className="text-xl" /> Account Info
         </h2>
@@ -77,7 +77,7 @@ export default function ContactInfoSection({
             />
           </div>
         )}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
           <FormInput
             id="clientAccountName"
             label="Account Name*"
