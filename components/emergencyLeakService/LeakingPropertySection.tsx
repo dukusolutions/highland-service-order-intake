@@ -458,7 +458,7 @@ export default function LeakingPropertySection({
 
           <FormTextarea
             id="comments"
-            label="Comments"
+            label="Comments*"
             value={displayed.comments}
             onChange={(event) => onEditorChange("comments", event.target.value)}
             error={errors.comments}

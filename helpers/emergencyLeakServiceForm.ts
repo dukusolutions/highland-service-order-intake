@@ -203,6 +203,31 @@ export function validateProperty(property: LeakingProperty): ValidationErrors {
   if (!property.siteZip.trim()) {
     errors.siteZip = "Site Zip is required.";
   }
+  if (!property.comments.trim()) {
+    errors.comments = "Comments are required.";
+  }
+
+  // At least one of: tenant contact name or business name
+  if (
+    !property.tenantContactName.trim() &&
+    !property.tenantBusinessName.trim()
+  ) {
+    const msg = "Provide a tenant contact name or business name.";
+    errors.tenantContactName = msg;
+    errors.tenantBusinessName = msg;
+  }
+
+  // At least one contact method: phone, cell, or email
+  if (
+    !property.tenantContactPhone.trim() &&
+    !property.tenantContactCell.trim() &&
+    !property.tenantContactEmail.trim()
+  ) {
+    const msg = "Provide at least one contact method (phone, cell, or email).";
+    errors.tenantContactPhone = msg;
+    errors.tenantContactCell = msg;
+    errors.tenantContactEmail = msg;
+  }
 
   return errors;
 }
