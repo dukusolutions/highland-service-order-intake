@@ -16,10 +16,12 @@ type FormInputProps = {
   label: string;
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
   error?: string;
   type?: "text" | "email" | "tel";
   placeholder?: string;
   previewing?: boolean;
+  rows?: number;
 };
 
 export function FormInput({
@@ -27,10 +29,12 @@ export function FormInput({
   label,
   value,
   onChange,
+  onBlur,
   error,
   type = "text",
   placeholder,
   previewing = false,
+  rows = 1,
 }: FormInputProps) {
   const isTel = type === "tel";
 
@@ -49,7 +53,7 @@ export function FormInput({
 
   return (
     <label
-      className="flex flex-col gap-2 text-sm font-semibold text-slate-800"
+      className="flex flex-col gap-1 text-sm font-semibold text-slate-800"
       htmlFor={id}
     >
       {label}
@@ -58,10 +62,11 @@ export function FormInput({
         name={id}
         value={value}
         onChange={handleChange}
+        onBlur={onBlur}
         type={isTel ? "tel" : type}
         inputMode={isTel ? "tel" : undefined}
         placeholder={placeholder}
-        className={`w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
+        className={`w-full rounded-md border px-3 py-1.5 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
           previewing
             ? "border-amber-300 bg-amber-50"
             : "border-slate-300 bg-white"
@@ -82,6 +87,7 @@ type FormTextareaProps = {
   error?: string;
   className?: string;
   previewing?: boolean;
+  rows?: number;
 };
 
 export function FormTextarea({
@@ -92,11 +98,12 @@ export function FormTextarea({
   error,
   className,
   previewing = false,
+  rows = 4,
 }: FormTextareaProps) {
   return (
     <label
       className={
-        className ?? "flex flex-col gap-2 text-sm font-semibold text-slate-800"
+        className ?? "flex flex-col gap-1 text-sm font-semibold text-slate-800"
       }
       htmlFor={id}
     >
@@ -106,7 +113,8 @@ export function FormTextarea({
         name={id}
         value={value}
         onChange={onChange}
-        className={`min-h-28 w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
+        rows={rows}
+        className={`w-full rounded-md border px-3 py-1.5 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${
           previewing
             ? "border-amber-300 bg-amber-50"
             : "border-slate-300 bg-white"

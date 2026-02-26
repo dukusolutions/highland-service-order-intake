@@ -1,4 +1,5 @@
 import { ChangeEvent, useMemo, useState } from "react";
+import { LuContact } from "react-icons/lu";
 import {
   ClientInfoPayload,
   IntakeFormData,
@@ -18,6 +19,7 @@ type ContactInfoSectionProps = {
   ) => void;
   prefillClients: ClientInfoPayload[];
   onPrefillClient: (client: ClientInfoPayload) => void;
+  onContactNameBlur?: (name: string) => void;
 };
 
 export default function ContactInfoSection({
@@ -26,6 +28,7 @@ export default function ContactInfoSection({
   onFieldChange,
   prefillClients,
   onPrefillClient,
+  onContactNameBlur,
 }: ContactInfoSectionProps) {
   const [previewData, setPreviewData] = useState<ClientInfoPayload | null>(
     null,
@@ -57,9 +60,11 @@ export default function ContactInfoSection({
   );
 
   return (
-    <section className="overflow-hidden rounded-lg border border-slate-300">
-      <div className="bg-slate-700 px-4 py-3">
-        <h2 className="text-lg font-bold text-white">Account Info</h2>
+    <section className="rounded-lg border border-slate-300">
+      <div className="rounded-t-lg bg-slate-700 px-4 py-3">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+          <LuContact className="text-xl" /> Account Info
+        </h2>
       </div>
       <div className="bg-white p-4">
         {options.length > 0 && (
@@ -72,7 +77,7 @@ export default function ContactInfoSection({
             />
           </div>
         )}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
           <FormInput
             id="clientAccountName"
             label="Account Name*"
@@ -86,6 +91,9 @@ export default function ContactInfoSection({
             label="Account Contact Name*"
             value={displayed.clientAccountContactName}
             onChange={handleInput("clientAccountContactName")}
+            onBlur={() =>
+              onContactNameBlur?.(formData.clientAccountContactName)
+            }
             error={errors.clientAccountContactName}
             previewing={isPreviewing}
           />

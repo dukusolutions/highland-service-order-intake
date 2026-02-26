@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import { LuSearch } from "react-icons/lu";
 
 type IntakeHeaderProps = {
   onReset?: () => void;
@@ -27,6 +28,22 @@ export default function IntakeHeader({
   const [lookupMode, setLookupMode] = useState<"email" | "serviceOrder">(
     "serviceOrder",
   );
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the lookup input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  function handleLookupValueChange(value: string) {
+    onLookupValueChange(value);
+    // Auto-detect mode based on input
+    if (value.includes("@")) {
+      setLookupMode("email");
+    } else if (lookupMode === "email" && !value.includes("@")) {
+      setLookupMode("serviceOrder");
+    }
+  }
 
   function handleLookup() {
     if (!lookupValue.trim() || isLookingUp) return;
@@ -78,47 +95,31 @@ export default function IntakeHeader({
 
       <div className="relative z-10 border-t border-slate-700 pt-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-semibold text-white">
-              Customer Lookup:
-            </span>
-            <label className="flex cursor-pointer items-center gap-1.5 text-sm text-slate-200">
-              <input
-                type="radio"
-                name="lookupMode"
-                checked={lookupMode === "serviceOrder"}
-                onChange={() => setLookupMode("serviceOrder")}
-                className="accent-[#2f9750]"
-              />
-              Service Order / Ref #
+          <div className="flex flex-1 items-center gap-3">
+            <label
+              htmlFor="lookupInput"
+              className="shrink-0 text-sm font-semibold text-slate-200"
+            >
+              Lookup by Service Order # or Email
             </label>
-            <label className="flex cursor-pointer items-center gap-1.5 text-sm text-slate-200">
+            <div className="relative flex-1">
+              <LuSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-slate-500" />
               <input
-                type="radio"
-                name="lookupMode"
-                checked={lookupMode === "email"}
-                onChange={() => setLookupMode("email")}
-                className="accent-[#2f9750]"
+                ref={inputRef}
+                id="lookupInput"
+                type="text"
+                value={lookupValue}
+                onChange={(e) => handleLookupValueChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="ELS-26-01-2222 or john.doe@acmeroofing.com"
+                className="w-full rounded-md border border-slate-400 bg-white py-2 pl-9 pr-3 text-base text-slate-900 placeholder-slate-400 outline-none transition focus:border-[#2f9750] focus:ring-2 focus:ring-[#2f9750]/40"
               />
-              Email
-            </label>
-            <input
-              type={lookupMode === "email" ? "email" : "text"}
-              value={lookupValue}
-              onChange={(e) => onLookupValueChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={
-                lookupMode === "email"
-                  ? "john@company.com"
-                  : "ELS-26-01-4837 or ref ID"
-              }
-              className="w-48 rounded-md border border-slate-500 bg-slate-800/60 px-3 py-1.5 text-sm text-white placeholder-slate-400 outline-none transition focus:border-[#2f9750] focus:ring-1 focus:ring-[#2f9750] sm:w-56"
-            />
+            </div>
             <button
               type="button"
               onClick={handleLookup}
               disabled={isLookingUp || !lookupValue.trim()}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#2f9750] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#268a45] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#2f9750] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#268a45] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLookingUp && (
                 <svg
@@ -148,7 +149,6 @@ export default function IntakeHeader({
 
           {onReset && (
             <div className="flex items-center gap-2">
-              {/* <div className="hidden h-6 w-px bg-slate-500 sm:block" /> */}
               <button
                 type="button"
                 onClick={onReset}

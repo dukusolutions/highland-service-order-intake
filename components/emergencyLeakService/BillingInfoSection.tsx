@@ -1,4 +1,5 @@
 import { ChangeEvent, useMemo, useState } from "react";
+import { LuCreditCard } from "react-icons/lu";
 import {
   BillingInfoPayload,
   IntakeFormData,
@@ -54,16 +55,21 @@ export default function BillingInfoSection({
     () =>
       prefillBillings.map((b) => ({
         label: b.EntityBillToName || "Unnamed Billing",
-        description: `${b.BillToAddress} ${b.BillToCity}`.trim() || undefined,
+        description:
+          [`${b.BillToAddress} ${b.BillToCity}`.trim(), b.BillToEmail]
+            .filter(Boolean)
+            .join(" — ") || undefined,
         value: b,
       })),
     [prefillBillings],
   );
 
   return (
-    <section className="overflow-hidden rounded-lg border border-slate-300">
-      <div className="bg-slate-700 px-4 py-3">
-        <h2 className="text-lg font-bold text-white">Billing Info</h2>
+    <section className="rounded-lg border border-slate-300">
+      <div className="rounded-t-lg bg-slate-700 px-4 py-3">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+          <LuCreditCard className="text-xl" /> Billing Info
+        </h2>
       </div>
       <div className="bg-white p-4">
         {options.length > 0 && (
@@ -76,7 +82,7 @@ export default function BillingInfoSection({
             />
           </div>
         )}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
           <FormInput
             id="billingEntityBillToName"
             label="Bill To Name"

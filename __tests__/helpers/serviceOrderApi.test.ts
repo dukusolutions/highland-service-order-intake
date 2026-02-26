@@ -162,6 +162,8 @@ describe("serviceOrderApi", () => {
         comments: "",
       },
       additionalLeaks: [],
+      SignatureData: "",
+      SignatureName: "",
     };
 
     it("returns message and requestId from server", async () => {
