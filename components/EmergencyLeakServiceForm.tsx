@@ -891,6 +891,18 @@ export default function EmergencyLeakServiceForm() {
             </p>
           )}
 
+        {Object.keys(errors).some(
+          (k) =>
+            k !== "signature" &&
+            k !== "signatureName" &&
+            k !== "billingTermsAcknowledged",
+        ) && (
+          <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            Please review the form above — some required fields are missing or
+            invalid.
+          </p>
+        )}
+
         <div className="flex flex-col gap-3  md:flex-row md:justify-end">
           {/* {process.env.NODE_ENV === "development" && (
             <>
